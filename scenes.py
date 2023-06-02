@@ -24,6 +24,6 @@ class scenes:
         
     def print_help():
         print('')
-        print('COMMANDS: \n LOOK - L\n TAKE -T\n INVENTORY - I\n USE - U\n HELP - H\n QUIT - Q\n')
+        print('COMMANDS: \n LOOK - L\n TAKE - T\n INVENTORY - I\n USE - U\n HELP - H\n QUIT - Q\n')
         print('Directions: \n NORTH - N\n SOUTH - S\n EAST - E\n WEST - W\n')
         print('')

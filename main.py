@@ -5,6 +5,7 @@ Created on Fri Oct  7 10:33:24 2022
 @author: Nathan
 """
 
+from encounter import encounter
 from events import events
 from tools import tools
 from locations import locations
@@ -12,7 +13,6 @@ from items import items
 from interactive_items import interactive_items
 from player import player
 from scenes import scenes
-from sys import exit
 
 def sanatize_input(user_input):
     return user_input.strip().lower()
@@ -184,6 +184,7 @@ while (active):
         if location.move(user_input):
             new_locations = location.get_adjacent_locations()
             move_location(user_input, location, new_locations)
+            encounter.check_encounter()
         else:
             print("You can't go that way.")
     
@@ -193,7 +194,10 @@ while (active):
         inv = ''
         for item in player.get_player_items():
             inv += " - " + item.get_name() + ": " + item.get_description() + '\n'
-        print(inv)
+        if inv != '':
+            print(inv)
+        else:
+            print(' - Your pockets are empty..\n')
         
         
     elif user_input in command_help:
@@ -202,8 +206,12 @@ while (active):
     elif user_input in command_quit:
         user_quit = input("Are you sure you want to quit? (y/n): ").lower()
         if user_quit == 'y' or user_quit == 'yes':
-            exit()
+            active = False
             
     else:
         print('Unknown command')
+        
+    if player.get_health() <= 0:
+        print('Sadly you have died.  Maybe use should think about your mistakes.')
+        active = False
 
