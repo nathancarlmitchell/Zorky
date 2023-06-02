@@ -11,7 +11,8 @@ class location:
     
     def __init__(self, _id, name, description, description_long,
                  directions, adjacent_locations, items = [],
-                 interactive_items = [], first_time = True):
+                 interactive_items = [], first_time = True,
+                 enemies_present = False):
         
         self.first_time = True
         self._id = _id
@@ -23,6 +24,7 @@ class location:
         self.adjacent_locations = adjacent_locations
         self.items = items
         self.interactive_items = interactive_items
+        self.enemies_present = enemies_present
         
         
     def get_first_time(self):
@@ -60,6 +62,12 @@ class location:
     
     def remove_items(self, item):
         self.items.remove(item) 
+        
+    def get_enemies_present(self):
+        return self.enemies_present
+    
+    def set_enemies_present(self, enemies_present):
+        self.enemies_present = enemies_present
     
     def move(self, direction):
         if direction.upper() in self.directions:

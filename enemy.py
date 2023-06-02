@@ -9,19 +9,15 @@ import random
 
 class enemy:
     
-    def __init__(self, enemies = [], health = 10):
+    def __init__(self, name, location, enemies = [], health = 10):
         self.enemies = enemies
+        self.name = name
         self.health = health
+        self.location = location
         
         
-    def get_enemies(self):
-        return self.items
-    
-    def add_enemies(self, enemy):
-        self.items.append(enemy)
-        
-    def remove_enemies(self, enemy):
-        self.items.remove(enemy)    
+    def get_location(self):
+        return self.location
 
     def get_health(self):
         return self.health

@@ -6,6 +6,7 @@ Created on Fri Oct  7 10:33:24 2022
 """
 
 from encounter import encounter
+from enemy import enemy
 from events import events
 from tools import tools
 from locations import locations
@@ -139,16 +140,27 @@ def interact(user_input, location, player):
             
         else:
             print("You can't do that.\n")
+            
+def get_user_input():
+    print('')
+    user_input = sanatize_input( input(location.get_name() + ": ") )
+    print('')
+    return user_input
     
                                
 active = True
 player = player()
+enemies = []
 locations[0].set_active(True)
+
 scenes.intro()               
 
 while (active):
     
+    location = get_current_location()
+    
     directions = ['n', 'north', 's', 'south', 'e', 'east', 'w', 'west']
+    command_attack = ['a', 'attack', 'fight']
     command_look = ['l', 'look', 'see', 'description']
     command_take = ['t', 'take', 'get', 'grab', 'pickup']
     command_interact = ['u', 'use']
@@ -156,62 +168,80 @@ while (active):
     command_quit = ['q', 'quit']
     command_help = ['h', 'help', '?']
     
-    location = get_current_location()
-    if location.interactive_items != []:
-        for item_number in location.interactive_items:
-            item = get_item_by_id(interactive_items, item_number)
-            if item.get_active():
-                print(item.get_active_description())
-            
-    display_items(location)
     
-    print('')
-    user_input = sanatize_input( input(location.get_name() + ": ") )
-    print('')
-    
-    user_input_words = user_input.split(' ')
-    
-    if user_input in command_look:
-        tools.type_text('Look: ' + location.get_description_long())
-        
-    elif user_input_words[0] in command_take:
-        take_items(user_input, location)
-        
-    elif user_input_words[0] in command_interact:
-        interact(user_input, location, player)
-
-    elif user_input in directions:
-        if location.move(user_input):
-            new_locations = location.get_adjacent_locations()
-            move_location(user_input, location, new_locations)
-            encounter.check_encounter()
-        else:
-            print("You can't go that way.")
-    
-            
-    elif user_input in command_inventory:
-        print('INVENTORY: ')
-        inv = ''
-        for item in player.get_player_items():
-            inv += " - " + item.get_name() + ": " + item.get_description() + '\n'
-        if inv != '':
-            print(inv)
-        else:
-            print(' - Your pockets are empty..\n')
-        
-        
-    elif user_input in command_help:
-        scenes.print_help()
-         
-    elif user_input in command_quit:
-        user_quit = input("Are you sure you want to quit? (y/n): ").lower()
-        if user_quit == 'y' or user_quit == 'yes':
-            active = False
-            
+    if location.get_enemies_present():
+        for e in enemies:
+            if e.get_location() == location.get_id():
+                print('enemies')
+                user_input = get_user_input()
+                
+                if user_input in command_attack:
+                    if enemies:
+                        print('You attack the enemy.\n')
+                else:
+                    print('You are under attack!\n')
+                
     else:
-        print('Unknown command')
+        if location.interactive_items != []:
+            for item_number in location.interactive_items:
+                item = get_item_by_id(interactive_items, item_number)
+                if item.get_active():
+                    print(item.get_active_description())
+                
+        display_items(location)
         
-    if player.get_health() <= 0:
-        print('Sadly you have died.  Maybe use should think about your mistakes.')
-        active = False
+        user_input = get_user_input()
+        user_input_words = user_input.split(' ')
+        
+        if user_input in command_attack:
+            if enemies:
+                print('ERROR: enemies')
+            else:
+                print('You swing at the air.  It provides little resistance.\n')
+        
+        elif user_input_words[0] in command_look:
+            tools.type_text('Look: ' + location.get_description_long())
+            
+        elif user_input_words[0] in command_take:
+            take_items(user_input, location)
+            
+        elif user_input_words[0] in command_interact:
+            interact(user_input, location, player)
+    
+        elif user_input in directions:
+            if location.move(user_input):
+                new_locations = location.get_adjacent_locations()
+                move_location(user_input, location, new_locations)
+                if encounter.check_encounter():
+                    enemies.append(enemy(name = 'wolf', health = 5, location = location.get_id()))
+                    location.set_enemies_present(True)
+            else:
+                print("You can't go that way.")
+        
+                
+        elif user_input in command_inventory:
+            print('INVENTORY: ')
+            inv = ''
+            for item in player.get_player_items():
+                inv += " - " + item.get_name() + ": " + item.get_description() + '\n'
+            if inv != '':
+                print(inv)
+            else:
+                print(' - Your pockets are empty..\n')
+            
+            
+        elif user_input in command_help:
+            scenes.print_help()
+             
+        elif user_input in command_quit:
+            user_quit = input("Are you sure you want to quit? (y/n): ").lower()
+            if user_quit == 'y' or user_quit == 'yes':
+                active = False
+                
+        else:
+            print('Unknown command')
+            
+        if player.get_health() <= 0:
+            print('Sadly you have died.  Maybe use should think about your mistakes.')
+            active = False
 
