@@ -66,9 +66,6 @@ class location:
     def get_enemies_present(self):
         return self.enemies_present
     
-    def set_enemies_present(self, enemies_present):
-        self.enemies_present = enemies_present
-    
     def move(self, direction):
         if direction.upper() in self.directions:
             return True

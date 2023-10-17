@@ -6,6 +6,7 @@ Created on Mon Oct 10 14:15:48 2022
 """
 
 import random
+import location
 
 class enemy:
     
@@ -22,10 +23,12 @@ class enemy:
     def get_health(self):
         return self.health
     
-    def update_health(self, change):
+    def update_health(self, change, l):
         self.health = self.health + change
+        print(self.health)
         if self.health <= 0:
-            self.remove_enemies(self)
+            print(f'You killed the {self.name}.')
+            l.enemies_present = False
         
     def attack(self):
         chance = random.randint(1, 2)

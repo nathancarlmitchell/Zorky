@@ -62,7 +62,7 @@ def take_all(location):
                 player.add_player_items(item)
                 location.remove_items(item_number)
                 location_items.remove(item_number)
-                msg += item.get_name() + ' taken.\n'
+                msg += f"{item.get_name().title()} taken.\n"
     if msg == '':
         print("You don't see anything worth taking.\n")
     else:
@@ -75,7 +75,8 @@ def take_items(user_input, location):
     for word in user_input_words:
         if location.get_items() != []:
             if len(user_input_words) == 1:
-                print('Take what?\n')
+                user_input = input('Take what? ')
+                user_input_words = user_input.split(' ')
             if 'all' in user_input_words:
                 current_item = 'all'
             else:
@@ -95,7 +96,7 @@ def take_items(user_input, location):
         if item.get_hidden() == False:
             player.add_player_items(item)
             location.remove_items(current_item)
-            print(item.get_name() + ' taken.\n')
+            print(f"{item.get_name().title()} taken.\n")
     else:
         print("You can't take that.\n")
         
@@ -178,8 +179,10 @@ while (active):
                 if user_input in command_attack:
                     if enemies:
                         print('You attack the enemy.\n')
+                        e.update_health(-2, location)
                 else:
                     print('You are under attack!\n')
+                    print(e.get_health())
                 
     else:
         if location.interactive_items != []:
@@ -212,9 +215,10 @@ while (active):
             if location.move(user_input):
                 new_locations = location.get_adjacent_locations()
                 move_location(user_input, location, new_locations)
-                if encounter.check_encounter():
+                if encounter.check_encounter(100):
+                    print('enemy spawn')
                     enemies.append(enemy(name = 'wolf', health = 5, location = location.get_id()))
-                    location.set_enemies_present(True)
+                    location.enemies_present = True
             else:
                 print("You can't go that way.")
         
@@ -223,7 +227,7 @@ while (active):
             print('INVENTORY: ')
             inv = ''
             for item in player.get_player_items():
-                inv += " - " + item.get_name() + ": " + item.get_description() + '\n'
+                inv += f" - {item.get_name().title()}: {item.get_description()}\n"
             if inv != '':
                 print(inv)
             else:
